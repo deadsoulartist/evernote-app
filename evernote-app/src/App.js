@@ -25,6 +25,7 @@ class App extends React.Component {
           selectNote={this.selectNote}
           newNote={this.newNote}
         ></SidebarComponent>
+
         {this.state.selectedNote ? (
           <EditorComponent
             selectedNote={this.state.selectedNote}
@@ -47,6 +48,7 @@ class App extends React.Component {
           data["id"] = _doc.id;
           return data;
         });
+
         console.log(notes);
         this.setState({ notes: notes });
       });
@@ -54,6 +56,7 @@ class App extends React.Component {
 
   selectNote = (note, index) =>
     this.setState({ selectedNoteIndex: index, selectedNote: note });
+
   noteUpdate = (id, noteObj) => {
     firebase.default.firestore().collection("notes").doc(id).update({
       title: noteObj.title,
@@ -61,11 +64,13 @@ class App extends React.Component {
       timestamp: firebase.default.firestore.FieldValue.serverTimestamp(),
     });
   };
+
   newNote = async (title) => {
     const note = {
       title: title,
       body: "",
     };
+
     const newFromDB = await firebase.default
       .firestore()
       .collection("notes")
@@ -74,21 +79,25 @@ class App extends React.Component {
         body: note.body,
         timestamp: firebase.default.firestore.FieldValue.serverTimestamp(),
       });
+
     const newID = newFromDB.id;
     await this.setState({ notes: [...this.state.notes, note] });
     const newNoteIndex = this.state.notes.indexOf(
       this.state.notes.filter((_note) => _note.id === newID)[0]
     );
+
     this.setState({
       selectedNote: this.state.notes[newNoteIndex],
       selectedNoteIndex: newNoteIndex,
     });
   };
+
   deleteNote = async (note) => {
     const noteIndex = this.state.notes.indexOf(note);
     await this.setState({
       notes: this.state.notes.filter((_note) => _note !== note),
     });
+
     if (this.state.selectedNoteIndex === noteIndex) {
       this.setState({ selectedNoteIndex: null, selectedNote: null });
     } else {
